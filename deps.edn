@@ -1,0 +1,77 @@
+{
+ :mvn/repos {"clojars" {:url "https://repo.clojars.org/"}
+             "central" {:url "https://repo1.maven.org/maven2/"}}
+
+ :paths     ["src" "resources" "target/classes"]
+
+ :deps      {org.clojure/clojure                       {:mvn/version "1.10.3"}
+             org.clojure/test.check                    {:mvn/version "1.1.0"}
+
+             org.apache.storm/storm-client             {:mvn/version "2.2.0"}
+             org.apache.storm/storm-clojure            {:mvn/version "2.2.0"}
+
+             io.dropwizard.metrics/metrics-core        {:mvn/version "3.2.3"}
+
+             ;;logging
+             io.pedestal/pedestal.log                  {:mvn/version "0.5.8"}
+             org.apache.logging.log4j/log4j-core       {:mvn/version "2.14.0"}
+             org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.14.0"}
+             }
+
+ :aliases   {
+             :compile  {:extra-deps {badigeon/badigeon {:mvn/version "1.4"}}}
+
+             :run      {:extra-paths ["resources"]
+                        :jvm-opts    ["-DLOG4J_CONFIGURATION_FILE=resources/log4j2.xml"
+                                      "-Duser.timezone=UTC"]
+                        :main-opts   ["--main" "org.rssys.stormexample.core"]}
+
+             :repl     {:extra-deps  {org.apache.storm/storm-core {:mvn/version "2.2.0"}
+
+                                      nrepl/nrepl                 {:mvn/version "0.8.3"}
+                                      healthsamurai/matcho        {:mvn/version "0.3.7"}
+                                      criterium/criterium         {:mvn/version "0.4.6"}
+                                      hashp/hashp                 {:mvn/version "0.2.1"}}
+                        :extra-paths ["dev/src" "resources" "test"]
+                        :jvm-opts    []
+                        :main-opts   ["--main" "nrepl.cmdline"]}
+
+             :test     {:extra-deps  {org.clojure/test.check        {:mvn/version "1.1.0"}
+                                      healthsamurai/matcho          {:mvn/version "0.3.7"}
+                                      lambdaisland/kaocha           {:mvn/version "1.0.732"}
+                                      lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}}
+                        :extra-paths ["resources" "test" "test/resources"]
+                        :jvm-opts    []
+                        :main-opts   ["--main" "kaocha.runner"]}
+
+             :jar      {:replace-deps {seancorfield/depstar {:mvn/version "2.0.188"}}
+                        :exec-fn      hf.depstar/jar
+                        :exec-args    {:jar        "stormexample.jar"
+                                       :aot        true
+                                       :exclude    [".*org.rssys.stormexample.*\\.clj"]
+                                       :main-class "org.rssys.stormexample.core"
+                                       :sync-pom   true
+                                       :compile-ns [:all]}}
+
+             :uberjar  {:replace-deps {seancorfield/depstar {:mvn/version "2.0.188"}}
+                        :exec-fn      hf.depstar/uberjar
+                        :exec-args    {:jar        "stormexample.jar"
+                                       :aot        true
+                                       :exclude    [".*org.rssys.stormexample.*\\.clj"]
+                                       :main-class "org.rssys.stormexample.core"
+                                       :sync-pom   true
+                                       :compile-ns [:all]}}
+
+             :javac    {:extra-deps  {org.clojure/tools.deps.alpha {:mvn/version "0.8.677"}}
+                        :extra-paths ["scripts"]}
+
+             :install  {:replace-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
+                        :exec-fn      deps-deploy.deps-deploy/deploy
+                        :exec-args    {:installer :local :artifact "stormexample.jar"}}
+
+
+             :outdated {:extra-deps {antq/antq {:mvn/version "0.11.2"}}
+                        :main-opts  ["-m" "antq.core"]}
+
+             }
+ }
